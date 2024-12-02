@@ -57,7 +57,6 @@ async function runChat(userInput) {
     ]);
     // Add user input to parts
     parts.push({ text: `input: ${userInput}` });
-    console.log(parts)
     // Generate response
     const result = await model.generateContent({
       contents: [{ role: "user", parts }],

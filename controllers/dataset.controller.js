@@ -2,13 +2,33 @@ const dataset = require('../models/dataset.model');
 
 const getDataset = async (req, res) => {
     try {
-        const data = await dataset.find();
-        res.json(data);
+        // Ma'lumotlarni MongoDB dan olish
+        const cursor = dataset.find().cursor(); // Cursor orqali qism-qism olish
+        const total = await dataset.countDocuments(); // Jami hujjat sonini olish
+        let count = 0;
+        // Streaming uchun header'ni o'rnatish
+        res.setHeader('Content-Type', 'application/json');
+        res.write('['); // JSON massiv boshlanishi
+        for await (const doc of cursor) {
+            if (count > 0) res.write(','); // JSON elementlarni ajratish
+
+            const progress = ((count + 1) / total) * 100; // Progressni hisoblash
+
+            // Har bir hujjatni JSON formatida yozish
+            res.write(JSON.stringify({ ...doc.toObject(), progress }));
+
+            count++;
+        }
+
+        res.write(']'); // JSON massivni yakunlash
+        res.end(); // Ma'lumotni yuborishni tugatish
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
+
 const getDatasetById = async (req, res) => {
     try {
         const { id } = req.params;
