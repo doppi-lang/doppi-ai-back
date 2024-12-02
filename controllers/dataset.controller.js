@@ -1,28 +1,38 @@
+const { get } = require('mongoose');
 const dataset = require('../models/dataset.model');
 
 const getDataset = async (req, res) => {
     try {
         // Ma'lumotlarni MongoDB dan olish
         const cursor = dataset.find().cursor(); // Cursor orqali qism-qism olish
-        const total = await dataset.countDocuments(); // Jami hujjat sonini olish
-        let count = 0;
-        // Streaming uchun header'ni o'rnatish
         res.setHeader('Content-Type', 'application/json');
         res.write('['); // JSON massiv boshlanishi
+        let isFirst = true;
         for await (const doc of cursor) {
-            if (count > 0) res.write(','); // JSON elementlarni ajratish
-
-            const progress = ((count + 1) / total) * 100; // Progressni hisoblash
-
-            // Har bir hujjatni JSON formatida yozish
-            res.write(JSON.stringify({ ...doc.toObject(), progress }));
-
-            count++;
+            if (!isFirst) res.write(','); // JSON elementlarni ajratish
+            res.write(JSON.stringify(doc.toObject())); // Hujjatni JSON formatida yuborish
+            isFirst = false;
         }
-
         res.write(']'); // JSON massivni yakunlash
         res.end(); // Ma'lumotni yuborishni tugatish
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+const getProgress = async (req, res) => {
+    try {
+        const total = await dataset.countDocuments(); // Jami hujjatlarni olish
+        const cursor = dataset.find().cursor(); // Streaming orqali ishlash
+        let count = 0;
 
+        // Streaming orqali progressni yuborish
+        for await (const _ of cursor) {
+            count++;
+            const progress = ((count / total) * 100).toFixed(2); // Progressni hisoblash
+            res.write(JSON.stringify({ progress }) + '\n'); // JSON formatida progressni yuborish
+        }
+        res.end(); // Yuborishni tugatish
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -82,4 +92,4 @@ const updateDataset = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
-module.exports = { getDataset, addDataset,deleteDataset,getDatasetById,updateDataset };
+module.exports = { getDataset, addDataset,deleteDataset,getDatasetById,updateDataset,getProgress };
