@@ -18,7 +18,7 @@ app.use(express.json());
 app.use("/api", require("./routes/dataset.routes"));
 
 // Constants
-const MODEL_NAME = "gemini-1.5-flash";
+const MODEL_NAME = "gemini-2.5-flash";
 const API_KEY = process.env.API_KEY;
 
 // Validate API Key
@@ -65,61 +65,61 @@ async function runChat(userInput) {
     });
     const res = model.startChat({
       history: [
-          {
-            role: "model",
-            parts: [{ text: "Hello! Welcome to Coding Money. My name is Sam. What's your name?"}],
-          },
-          {
-            role: "user",
-            parts: [{ text: "Hi"}],
-          },
-          {
-            role: "model",
-            parts: [{ text: "Hi there! Thanks for reaching out to Coding Money. Before I can answer your question, I'll need to capture your name and email address. Can you please provide that information?"}],
-          },
-          {
-            role: "user",
-            parts: [{ text: "My name is Hayotjon"}],
-          },
-          {
-            role:"user",
-            parts: [{ text: "admin's email is hayotsultonov2005@mail.ru"}]
-          },
-          {
-            role: "user",
-            parts: [
-              {
-                text:"Doppi haqida nima bilasan ?"
-              }
-            ]
-          },
-          {
-            role: "model",
-            parts:[
-              {
-                text:result.response.text()
-              }
-            ]
-          }
+        {
+          role: "model",
+          parts: [{ text: "Hello! Welcome to Coding Money. My name is Sam. What's your name?" }],
+        },
+        {
+          role: "user",
+          parts: [{ text: "Hi" }],
+        },
+        {
+          role: "model",
+          parts: [{ text: "Hi there! Thanks for reaching out to Coding Money. Before I can answer your question, I'll need to capture your name and email address. Can you please provide that information?" }],
+        },
+        {
+          role: "user",
+          parts: [{ text: "My name is Hayotjon" }],
+        },
+        {
+          role: "user",
+          parts: [{ text: "admin's email is hayotsultonov2005@mail.ru" }]
+        },
+        {
+          role: "user",
+          parts: [
+            {
+              text: "Doppi haqida nima bilasan ?"
+            }
+          ]
+        },
+        {
+          role: "model",
+          parts: [
+            {
+              text: result.response.text()
+            }
+          ]
+        }
       ],
       generationConfig,
       safetySettings,
     })
-    const doppiWorks = userInput.includes("doppi") || 
-                   userInput.includes("tuz") || 
-                   userInput.includes("doppida") || 
-                   userInput.includes("yarat") || 
-                   userInput.includes("qanday") ||
-                   userInput.includes("sinflar") || 
-                   userInput.includes("funksiya") || 
-                   userInput.includes("o'zgaruvchi") || 
-                   userInput.includes("kod") || 
-                   userInput.includes("doppi bilan") || 
-                   userInput.includes("sinfni qanday yaratish");
-    const startChat = userInput.includes("Hi") || 
-                      userInput.includes("hayotjon") ||
-                      userInput.includes("Salom") ||
-                      userInput.includes("Assalomu aleykum");
+    const doppiWorks = userInput.includes("doppi") ||
+      userInput.includes("tuz") ||
+      userInput.includes("doppida") ||
+      userInput.includes("yarat") ||
+      userInput.includes("qanday") ||
+      userInput.includes("sinflar") ||
+      userInput.includes("funksiya") ||
+      userInput.includes("o'zgaruvchi") ||
+      userInput.includes("kod") ||
+      userInput.includes("doppi bilan") ||
+      userInput.includes("sinfni qanday yaratish");
+    const startChat = userInput.includes("Hi") ||
+      userInput.includes("hayotjon") ||
+      userInput.includes("Salom") ||
+      userInput.includes("Assalomu aleykum");
     return result.response.text();
   } catch (error) {
     console.error("Error in runChat:", error);
