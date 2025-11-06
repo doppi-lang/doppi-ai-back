@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 connectDB();
-app.use(cors());
+app.use(cors({ origin: 'https://ai.doppi-lang.uz' }));
 app.use(express.json());
 app.use("/api", require("./routes/dataset.routes"));
 
